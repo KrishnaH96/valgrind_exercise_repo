@@ -1,0 +1,198 @@
+[33mcommit 6430074f212bdfb442c3ee4f119cb60dacc30786[m[33m ([m[1;36mHEAD -> [m[1;32mvalgrind_exercise[m[33m)[m
+Author: Tommy IdeaPad3 <tchang@ideapad3>
+Date:   Tue Oct 3 03:17:17 2023 -0400
+
+    Add valgrind exercise
+
+[1mdiff --git a/CMakeLists.txt b/CMakeLists.txt[m
+[1mindex 2fa8dcf..134ee51 100644[m
+[1m--- a/CMakeLists.txt[m
+[1m+++ b/CMakeLists.txt[m
+[36m@@ -1,59 +1,9 @@[m
+ cmake_minimum_required(VERSION 3.14)[m
+ project(scratch)[m
+ [m
+[31m-#[m
+[31m-# GoogleTest Setup[m
+[31m-# ref: https://google.github.io/googletest/quickstart-cmake.html[m
+[31m-#[m
+[31m-[m
+[31m-# GoogleTest requires at least C++14[m
+ set(CMAKE_CXX_STANDARD 14)[m
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)[m
+ [m
+[31m-# declares a dependency on GoogleTest which is downloaded from GitHub[m
+[31m-include(FetchContent)[m
+[31m-FetchContent_Declare([m
+[31m-  googletest[m
+[31m-  URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip[m
+[31m-)[m
+[31m-# For Windows: Prevent overriding the parent project's compiler/linker settings[m
+[31m-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)[m
+[31m-FetchContent_MakeAvailable(googletest)[m
+[31m-[m
+[31m-# Enables testing for this directory and below[m
+[31m-enable_testing()[m
+[31m-include(GoogleTest)[m
+[31m-[m
+[31m-#[m
+[31m-# Doxygen Support check if Doxygen is installed[m
+[31m-# ref: https://cmake.org/cmake/help/latest/module/FindDoxygen.html[m
+[31m-#[m
+[31m-find_package(Doxygen)[m
+[31m-if ( DOXYGEN_FOUND )[m
+[31m-  set( DOXYGEN_OUTPUT_DIRECTORY     ${PROJECT_SOURCE_DIR}/docs )[m
+[31m-  set( DOXYGEN_COLLABORATION_GRAPH  YES )[m
+[31m-  set( DOXYGEN_EXTRACT_ALL          YES )[m
+[31m-  set( DOXYGEN_CLASS_DIAGRAMS       YES )[m
+[31m-  set( DOXYGEN_HIDE_UNDOC_RELATIONS NO )[m
+[31m-  set( DOXYGEN_HAVE_DOT             YES )[m
+[31m-  set( DOXYGEN_CLASS_GRAPH          YES )[m
+[31m-  set( DOXYGEN_CALL_GRAPH           YES )[m
+[31m-  set( DOXYGEN_CALLER_GRAPH         YES )[m
+[31m-  set( DOXYGEN_COLLABORATION_GRAPH  YES )[m
+[31m-  set( DOXYGEN_BUILTIN_STL_SUPPORT  YES )[m
+[31m-  set( DOXYGEN_EXTRACT_PRIVATE      YES )[m
+[31m-  set( DOXYGEN_EXTRACT_PACKAGE      YES )[m
+[31m-  set( DOXYGEN_EXTRACT_STATIC       YES )[m
+[31m-  set( DOXYGEN_EXTRACT_LOCALMETHODS YES )[m
+[31m-  set( DOXYGEN_UML_LOOK             YES )[m
+[31m-  set( DOXYGEN_UML_LIMIT_NUM_FIELDS 50 )[m
+[31m-  set( DOXYGEN_TEMPLATE_RELATIONS   YES )[m
+[31m-  set( DOXYGEN_DOT_GRAPH_MAX_NODES  100 )[m
+[31m-  set( DOXYGEN_MAX_DOT_GRAPH_DEPTH  0 )[m
+[31m-  set( DOXYGEN_DOT_TRANSPARENT      YES )[m
+[31m-else()[m
+[31m-  message( FATAL_ERROR "Doxygen needs to be installed to generate the doxygen documentation" )[m
+[31m-endif()[m
+ [m
+ #[m
+ # Create the compilation database for clangd and move it out of the build dir.[m
+[36m@@ -64,72 +14,6 @@[m [mexecute_process(COMMAND cmake -E create_symlink[m
+                 "${PROJECT_SOURCE_DIR}/compile_commands.json")[m
+ [m
+ [m
+[31m-#[m
+[31m-# Set up code coverage generation.[m
+[31m-# Must compile with debug, e.g,[m
+[31m-#   cmake -S ./ -B build/ -D CMAKE_BUILD_TYPE=Debug[m
+[31m-#[m
+[31m-option(WANT_COVERAGE "this option enable coverage" ON)[m
+[31m-if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")[m
+[31m-  set(WANT_COVERAGE OFF)[m
+[31m-endif()[m
+[31m-[m
+[31m-if(WANT_COVERAGE)[m
+[31m-  message("Enabling coverage")[m
+[31m-  list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake-modules")[m
+[31m-  include(CodeCoverage)[m
+[31m-  # The following line come from cmake-modules/CodeCoverage.cmake[m
+[31m-  append_coverage_compiler_flags() # will add "--coverage" compilation flag[m
+[31m-  # Exclude certain directories from coverage analysis[m
+[31m-  set(COVERAGE_EXCLUDES[m
+[31m-    ${PROJECT_BINARY_DIR}[m
+[31m-    )[m
+[31m-endif()[m
+[31m-[m
+[31m-#[m
+[31m-# c++ Boilerplate Modification Starts Here[m
+[31m-# ref: https://iamsorush.com/posts/cpp-cmake-essential/[m
+[31m-# ref: https://cmake.org/cmake/help/latest/guide/tutorial/index.html[m
+[31m-#[m
+[31m-add_subdirectory(libs)[m
+[32m+[m[32m# Just a simple app[m[41m               [m
+ add_subdirectory(app)[m
+[31m-add_subdirectory(test)[m
+[31m-[m
+[31m-# create a target to build documentation[m
+[31m-doxygen_add_docs(docs           # target name[m
+[31m-  # List of files or directories[m
+[31m-  ${PROJECT_SOURCE_DIR}/app[m
+[31m-  ${PROJECT_SOURCE_DIR}/libs[m
+[31m-  ${PROJECT_SOURCE_DIR}/include[m
+[31m-  )[m
+[31m-[m
+[31m-# create targets for building code coverage reports[m
+[31m-if(WANT_COVERAGE)[m
+[31m-  # unit test coverage:[m
+[31m-  setup_target_for_coverage_lcov ( # use lcov to generate coverage report[m
+[31m-    NAME test_coverage          # target name[m
+[31m-    # EXECUTABLE ctest || true    # what to run insdie the build directory?[m
+[31m-    #                             #   '|| true' --> continue coverage even if ctest failed[m
+[31m-    EXECUTABLE ctest     # what to run insdie the build directory?[m
+[31m-    EXCLUDE[m
+[31m-      "app/main.cpp"     # Unit test does not run app, so don't analyze it[m
+[31m-      "*gtest*"          # Don't analyze googleTest code[m
+[31m-      "/usr/include/*"   # Don't analyze system headers[m
+[31m-    )[m
+[31m-[m
+[31m-  # code coverage for the app (shell-app):[m
+[31m-  # Use gcovr insetad of lcov if you want to see branch coverage as well[m
+[31m-  setup_target_for_coverage_gcovr_html ( # use gcovr to generate coverage report[m
+[31m-    NAME app_coverage          # target name[m
+[31m-    EXECUTABLE shell-app       # what to run insdie the build directory?[m
+[31m-    EXCLUDE[m
+[31m-    "test/test.cpp"    # App does not run unit test, so don't analyze it[m
+[31m-    "test/main.cpp"    # App does not run unit test, so don't analyze it[m
+[31m-    )[m
+[31m-[m
+[31m-endif()[m
+ [m
+[31m-# Sanity check:[m
+[31m-# can also do "cmake -S ./ -B build/ -LAH" to print all variables[m
+[31m-message(STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")[m
+[31m-message(STATUS "WANT_COVERAGE    = ${WANT_COVERAGE}")[m
+[1mdiff --git a/README.md b/README.md[m
+[1mindex 20080be..6d8c926 100644[m
+[1m--- a/README.md[m
+[1m+++ b/README.md[m
+[36m@@ -1,21 +1,7 @@[m
+[31m-# cpp-boilerplate-v2[m
+[31m-[m
+[31m-# C++ Boilerplate v2 Badges[m
+[31m-![CICD Workflow status](https://github.com/TommyChangUMD/cpp-boilerplate-v2/actions/workflows/run-unit-test-and-upload-codecov.yml/badge.svg) [![codecov](https://codecov.io/gh/TommyChangUMD/cpp-boilerplate-v2/branch/main/graph/badge.svg)](https://codecov.io/gh/TommyChangUMD/cpp-boilerplate-v2) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)[m
+[31m-[m
+[31m-[m
+[31m-## Overview[m
+[31m-[m
+[31m-Simple starter C++ project with:[m
+[31m-[m
+[31m-- CMake[m
+[31m-- GoogleTest[m
+[32m+[m[32m# Valgrind Exercise[m
+ [m
+ ## Standard install via command-line[m
+ ```bash[m
+[31m-# Download the code:[m
+[31m-  git clone https://github.com/TommyChangUMD/cpp-boilerplate-v2[m
+[31m-  cd cpp-boilerplate-v2[m
+ # Configure the project and generate a native build system:[m
+   # Must re-run this command whenever any CMakeLists.txt file has been changed.[m
+   cmake -S ./ -B build/[m
+[36m@@ -28,205 +14,9 @@[m [mSimple starter C++ project with:[m
+   cmake --build build/ --verbose[m
+ # Run program:[m
+   ./build/app/shell-app[m
+[31m-# Run tests:[m
+[31m-  cd build/; ctest; cd -[m
+[31m-  # or if you have newer cmake[m
+[31m-  ctest --test-dir build/[m
+[31m-# Build docs:[m
+[31m-  cmake --build build/ --target docs[m
+[31m-  # open a web browser to browse the doc[m
+[31m-  open docs/html/index.html[m
+ # Clean[m
+   cmake --build build/ --target clean[m
+ # Clean and start over:[m
+   rm -rf build/[m
+ ```[m
+ [m
+[31m-ref: https://cmake.org/cmake/help/latest/manual/cmake.1.html[m
+[31m-[m
+[31m-## Building for code coverage (for assignments beginning in Week 4)[m
+[31m-[m
+[31m-```bash[m
+[31m-# if you don't have gcovr or lcov installed, do:[m
+[31m-  sudo apt-get install gcovr lcov[m
+[31m-# Set the build type to Debug and WANT_COVERAGE=ON[m
+[31m-  cmake -D WANT_
